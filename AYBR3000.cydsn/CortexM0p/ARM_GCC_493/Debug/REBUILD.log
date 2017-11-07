@@ -1,0 +1,3 @@
+--------------- Rebuild Started: 09/19/2017 19:44:36 Project: A7105_firmware_lib.c, Configuration: ARM GCC 4.9-2015-q1-update Debug ---------------
+arm-none-eabi-gcc.exe -mcpu=cortex-m0plus -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0p\ARM_GCC_493\Debug/A7105_firmware_lib.lst -g -D DEBUG -Wall -ffunction-sections -Og -ffat-lto-objects -c A7105_firmware_lib.c -o .\CortexM0p\ARM_GCC_493\Debug\A7105_firmware_lib.o
+--------------- Rebuild Succeeded: 09/19/2017 19:44:36 ---------------

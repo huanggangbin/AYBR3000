@@ -1,0 +1,1265 @@
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 1
+
+
+   1              		.cpu cortex-m0plus
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.main,"ax",%progbits
+  18              		.align	2
+  19              		.global	main
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	main, %function
+  23              	main:
+  24              	.LFB35:
+  25              		.file 1 "main.c"
+   1:main.c        **** /* ========================================
+   2:main.c        ****  *
+   3:main.c        ****  * Copyright YOUR COMPANY, THE YEAR
+   4:main.c        ****  * All Rights Reserved
+   5:main.c        ****  * UNPUBLISHED, LICENSED SOFTWARE.
+   6:main.c        ****  *
+   7:main.c        ****  * CONFIDENTIAL AND PROPRIETARY INFORMATION
+   8:main.c        ****  * WHICH IS THE PROPERTY OF your company.
+   9:main.c        ****  *
+  10:main.c        ****  * ========================================
+  11:main.c        **** */
+  12:main.c        **** #include "project.h"
+  13:main.c        **** #include "A7105_driver.h"
+  14:main.c        **** CY_ISR_PROTO(time_1ms_Interrupt);
+  15:main.c        **** uint8 t = 0;
+  16:main.c        **** uint8 send_buffer[16]; 
+  17:main.c        **** uint16 timer_count = 0;
+  18:main.c        **** //#define TOUCH_TUNE_SWITCH
+  19:main.c        **** int main(void)
+  20:main.c        **** {
+  26              		.loc 1 20 0
+  27              		.cfi_startproc
+  28 0000 08B5     		push	{r3, lr}
+  29              		.cfi_def_cfa_offset 8
+  30              		.cfi_offset 3, -8
+  31              		.cfi_offset 14, -4
+  21:main.c        ****     static volatile uint8 temp = 0;
+  22:main.c        ****     CyGlobalIntEnable; /* Enable global interrupts. */
+  32              		.loc 1 22 0
+  33              	@ 22 "main.c" 1
+  34 0002 62B6     		CPSIE   i
+  35              	@ 0 "" 2
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 2
+
+
+  23:main.c        ****     A7105_init();
+  36              		.loc 1 23 0
+  37              		.code	16
+  38 0004 FFF7FEFF 		bl	A7105_init
+  39              	.LVL0:
+  24:main.c        ****     //GIO1_Write(1);
+  25:main.c        **** #ifdef TOUCH_TUNE_SWITCH 
+  26:main.c        ****     
+  27:main.c        ****     EZI2C_Start(); /* Start EZI2C Component */
+  28:main.c        ****     /*
+  29:main.c        ****     * Set up communication and initialize data buffer to CapSense data structure
+  30:main.c        ****     * to use Tuner application
+  31:main.c        ****     */
+  32:main.c        ****     EZI2C_EzI2CSetBuffer1(sizeof(key_touch_dsRam), sizeof(key_touch_dsRam),(uint8 *)&key_touch_dsRa
+  33:main.c        **** 
+  34:main.c        **** #endif
+  35:main.c        ****     //Timer_1_Start();
+  36:main.c        ****     //time_1ms_ISR_StartEx(time_1ms_Interrupt);
+  37:main.c        ****     key_touch_Start(); /* Initialize Component */
+  40              		.loc 1 37 0
+  41 0008 FFF7FEFF 		bl	key_touch_Start
+  42              	.LVL1:
+  38:main.c        ****     key_touch_ScanAllWidgets(); /* Scan all widgets */
+  43              		.loc 1 38 0
+  44 000c FFF7FEFF 		bl	key_touch_ScanAllWidgets
+  45              	.LVL2:
+  46              	.L2:
+  39:main.c        **** 
+  40:main.c        ****     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
+  41:main.c        **** 
+  42:main.c        ****     for(;;)
+  43:main.c        ****     {
+  44:main.c        ****         /* Do this only when a scan is done */
+  45:main.c        ****         
+  46:main.c        ****         if(key_touch_NOT_BUSY == key_touch_IsBusy()) /*判断触控按键扫描是否完成*/
+  47              		.loc 1 46 0
+  48 0010 FFF7FEFF 		bl	key_touch_IsBusy
+  49              	.LVL3:
+  50 0014 0028     		cmp	r0, #0
+  51 0016 FBD1     		bne	.L2
+  47:main.c        ****         {
+  48:main.c        ****             key_touch_ProcessAllWidgets(); /* Process all widgets */
+  52              		.loc 1 48 0
+  53 0018 FFF7FEFF 		bl	key_touch_ProcessAllWidgets
+  54              	.LVL4:
+  49:main.c        ****             
+  50:main.c        **** #ifdef TOUCH_TUNE_SWITCH             
+  51:main.c        ****             key_touch_RunTuner(); /* To sync with Tuner application */
+  52:main.c        **** #endif
+  53:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON0_WDGT_ID))
+  55              		.loc 1 53 0
+  56 001c 0020     		mov	r0, #0
+  57 001e FFF7FEFF 		bl	key_touch_IsWidgetActive
+  58              	.LVL5:
+  59 0022 0028     		cmp	r0, #0
+  60 0024 02D0     		beq	.L3
+  54:main.c        ****                 t = 1+0x10;
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 3
+
+
+  61              		.loc 1 54 0
+  62 0026 1122     		mov	r2, #17
+  63 0028 344B     		ldr	r3, .L17
+  64 002a 1A70     		strb	r2, [r3]
+  65              	.L3:
+  55:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON1_WDGT_ID))
+  66              		.loc 1 55 0
+  67 002c 0120     		mov	r0, #1
+  68 002e FFF7FEFF 		bl	key_touch_IsWidgetActive
+  69              	.LVL6:
+  70 0032 0028     		cmp	r0, #0
+  71 0034 02D0     		beq	.L4
+  56:main.c        ****                 t = 2+0x10;
+  72              		.loc 1 56 0
+  73 0036 1222     		mov	r2, #18
+  74 0038 304B     		ldr	r3, .L17
+  75 003a 1A70     		strb	r2, [r3]
+  76              	.L4:
+  57:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON2_WDGT_ID))
+  77              		.loc 1 57 0
+  78 003c 0220     		mov	r0, #2
+  79 003e FFF7FEFF 		bl	key_touch_IsWidgetActive
+  80              	.LVL7:
+  81 0042 0028     		cmp	r0, #0
+  82 0044 02D0     		beq	.L5
+  58:main.c        ****                 t = 3+0x10;
+  83              		.loc 1 58 0
+  84 0046 1322     		mov	r2, #19
+  85 0048 2C4B     		ldr	r3, .L17
+  86 004a 1A70     		strb	r2, [r3]
+  87              	.L5:
+  59:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON3_WDGT_ID))
+  88              		.loc 1 59 0
+  89 004c 0320     		mov	r0, #3
+  90 004e FFF7FEFF 		bl	key_touch_IsWidgetActive
+  91              	.LVL8:
+  92 0052 0028     		cmp	r0, #0
+  93 0054 02D0     		beq	.L6
+  60:main.c        ****                 t = 4+0x10;
+  94              		.loc 1 60 0
+  95 0056 1422     		mov	r2, #20
+  96 0058 284B     		ldr	r3, .L17
+  97 005a 1A70     		strb	r2, [r3]
+  98              	.L6:
+  61:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON4_WDGT_ID))
+  99              		.loc 1 61 0
+ 100 005c 0420     		mov	r0, #4
+ 101 005e FFF7FEFF 		bl	key_touch_IsWidgetActive
+ 102              	.LVL9:
+ 103 0062 0028     		cmp	r0, #0
+ 104 0064 02D0     		beq	.L7
+  62:main.c        ****                 t = 5+0x10;
+ 105              		.loc 1 62 0
+ 106 0066 1522     		mov	r2, #21
+ 107 0068 244B     		ldr	r3, .L17
+ 108 006a 1A70     		strb	r2, [r3]
+ 109              	.L7:
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 4
+
+
+  63:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON5_WDGT_ID))
+ 110              		.loc 1 63 0
+ 111 006c 0520     		mov	r0, #5
+ 112 006e FFF7FEFF 		bl	key_touch_IsWidgetActive
+ 113              	.LVL10:
+ 114 0072 0028     		cmp	r0, #0
+ 115 0074 02D0     		beq	.L8
+  64:main.c        ****                 t = 6+0x10;
+ 116              		.loc 1 64 0
+ 117 0076 1622     		mov	r2, #22
+ 118 0078 204B     		ldr	r3, .L17
+ 119 007a 1A70     		strb	r2, [r3]
+ 120              	.L8:
+  65:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON6_WDGT_ID))
+ 121              		.loc 1 65 0
+ 122 007c 0620     		mov	r0, #6
+ 123 007e FFF7FEFF 		bl	key_touch_IsWidgetActive
+ 124              	.LVL11:
+ 125 0082 0028     		cmp	r0, #0
+ 126 0084 02D0     		beq	.L9
+  66:main.c        ****                 t = 7+0x10;
+ 127              		.loc 1 66 0
+ 128 0086 1722     		mov	r2, #23
+ 129 0088 1C4B     		ldr	r3, .L17
+ 130 008a 1A70     		strb	r2, [r3]
+ 131              	.L9:
+  67:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON7_WDGT_ID))
+ 132              		.loc 1 67 0
+ 133 008c 0720     		mov	r0, #7
+ 134 008e FFF7FEFF 		bl	key_touch_IsWidgetActive
+ 135              	.LVL12:
+ 136 0092 0028     		cmp	r0, #0
+ 137 0094 02D0     		beq	.L10
+  68:main.c        ****                 t = 8+0x10;
+ 138              		.loc 1 68 0
+ 139 0096 1822     		mov	r2, #24
+ 140 0098 184B     		ldr	r3, .L17
+ 141 009a 1A70     		strb	r2, [r3]
+ 142              	.L10:
+  69:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON8_WDGT_ID))
+ 143              		.loc 1 69 0
+ 144 009c 0820     		mov	r0, #8
+ 145 009e FFF7FEFF 		bl	key_touch_IsWidgetActive
+ 146              	.LVL13:
+ 147 00a2 0028     		cmp	r0, #0
+ 148 00a4 02D0     		beq	.L11
+  70:main.c        ****                 t = 9+0x10;
+ 149              		.loc 1 70 0
+ 150 00a6 1922     		mov	r2, #25
+ 151 00a8 144B     		ldr	r3, .L17
+ 152 00aa 1A70     		strb	r2, [r3]
+ 153              	.L11:
+  71:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON9_WDGT_ID))
+ 154              		.loc 1 71 0
+ 155 00ac 0920     		mov	r0, #9
+ 156 00ae FFF7FEFF 		bl	key_touch_IsWidgetActive
+ 157              	.LVL14:
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 5
+
+
+ 158 00b2 0028     		cmp	r0, #0
+ 159 00b4 02D0     		beq	.L12
+  72:main.c        ****                 t = 10+0x10;
+ 160              		.loc 1 72 0
+ 161 00b6 1A22     		mov	r2, #26
+ 162 00b8 104B     		ldr	r3, .L17
+ 163 00ba 1A70     		strb	r2, [r3]
+ 164              	.L12:
+  73:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON10_WDGT_ID))
+ 165              		.loc 1 73 0
+ 166 00bc 0A20     		mov	r0, #10
+ 167 00be FFF7FEFF 		bl	key_touch_IsWidgetActive
+ 168              	.LVL15:
+ 169 00c2 0028     		cmp	r0, #0
+ 170 00c4 02D0     		beq	.L13
+  74:main.c        ****                 t = 11+0x10;
+ 171              		.loc 1 74 0
+ 172 00c6 1B22     		mov	r2, #27
+ 173 00c8 0C4B     		ldr	r3, .L17
+ 174 00ca 1A70     		strb	r2, [r3]
+ 175              	.L13:
+  75:main.c        ****             if (key_touch_IsWidgetActive(key_touch_BUTTON11_WDGT_ID))
+ 176              		.loc 1 75 0
+ 177 00cc 0B20     		mov	r0, #11
+ 178 00ce FFF7FEFF 		bl	key_touch_IsWidgetActive
+ 179              	.LVL16:
+ 180 00d2 0028     		cmp	r0, #0
+ 181 00d4 02D0     		beq	.L14
+  76:main.c        ****                 t = 12+0x10;
+ 182              		.loc 1 76 0
+ 183 00d6 1C22     		mov	r2, #28
+ 184 00d8 084B     		ldr	r3, .L17
+ 185 00da 1A70     		strb	r2, [r3]
+ 186              	.L14:
+  77:main.c        ****             if (t > 0x10)
+ 187              		.loc 1 77 0
+ 188 00dc 074B     		ldr	r3, .L17
+ 189 00de 1B78     		ldrb	r3, [r3]
+ 190 00e0 102B     		cmp	r3, #16
+ 191 00e2 07D9     		bls	.L15
+  78:main.c        ****             {
+  79:main.c        ****                 temp = !temp;
+ 192              		.loc 1 79 0
+ 193 00e4 054A     		ldr	r2, .L17
+ 194 00e6 5378     		ldrb	r3, [r2, #1]
+ 195 00e8 5942     		neg	r1, r3
+ 196 00ea 4B41     		adc	r3, r3, r1
+ 197 00ec DBB2     		uxtb	r3, r3
+ 198 00ee 5370     		strb	r3, [r2, #1]
+  80:main.c        ****                 t = temp;
+ 199              		.loc 1 80 0
+ 200 00f0 5378     		ldrb	r3, [r2, #1]
+ 201 00f2 1370     		strb	r3, [r2]
+ 202              	.L15:
+  81:main.c        ****             }
+  82:main.c        ****             key_touch_ScanAllWidgets(); /* Start next scan */
+ 203              		.loc 1 82 0
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 6
+
+
+ 204 00f4 FFF7FEFF 		bl	key_touch_ScanAllWidgets
+ 205              	.LVL17:
+ 206 00f8 8AE7     		b	.L2
+ 207              	.L18:
+ 208 00fa C046     		.align	2
+ 209              	.L17:
+ 210 00fc 00000000 		.word	.LANCHOR0
+ 211              		.cfi_endproc
+ 212              	.LFE35:
+ 213              		.size	main, .-main
+ 214              		.section	.text.time_1ms_Interrupt,"ax",%progbits
+ 215              		.align	2
+ 216              		.global	time_1ms_Interrupt
+ 217              		.code	16
+ 218              		.thumb_func
+ 219              		.type	time_1ms_Interrupt, %function
+ 220              	time_1ms_Interrupt:
+ 221              	.LFB36:
+  83:main.c        ****         }
+  84:main.c        ****         //if (!(timer_count % 100))
+  85:main.c        ****             //StrobeCmd(CMD_RX);
+  86:main.c        ****             //send_data_by_A7105(16, send_buffer);
+  87:main.c        ****         /* Place your application code here. */
+  88:main.c        ****     }
+  89:main.c        **** }
+  90:main.c        **** CY_ISR(time_1ms_Interrupt)
+  91:main.c        **** {
+ 222              		.loc 1 91 0
+ 223              		.cfi_startproc
+ 224 0000 08B5     		push	{r3, lr}
+ 225              		.cfi_def_cfa_offset 8
+ 226              		.cfi_offset 3, -8
+ 227              		.cfi_offset 14, -4
+  92:main.c        ****     Timer_1_ClearInterrupt(Timer_1_INTR_MASK_TC);
+ 228              		.loc 1 92 0
+ 229 0002 0120     		mov	r0, #1
+ 230 0004 FFF7FEFF 		bl	Timer_1_ClearInterrupt
+ 231              	.LVL18:
+  93:main.c        ****     //SCS_Write(t);
+  94:main.c        ****     timer_count++;
+ 232              		.loc 1 94 0
+ 233 0008 024A     		ldr	r2, .L20
+ 234 000a 5388     		ldrh	r3, [r2, #2]
+ 235 000c 0133     		add	r3, r3, #1
+ 236 000e 5380     		strh	r3, [r2, #2]
+  95:main.c        **** }
+ 237              		.loc 1 95 0
+ 238              		@ sp needed
+ 239 0010 08BD     		pop	{r3, pc}
+ 240              	.L21:
+ 241 0012 C046     		.align	2
+ 242              	.L20:
+ 243 0014 00000000 		.word	.LANCHOR0
+ 244              		.cfi_endproc
+ 245              	.LFE36:
+ 246              		.size	time_1ms_Interrupt, .-time_1ms_Interrupt
+ 247              		.global	timer_count
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 7
+
+
+ 248              		.comm	send_buffer,16,4
+ 249              		.global	t
+ 250              		.bss
+ 251              		.align	1
+ 252              		.set	.LANCHOR0,. + 0
+ 253              		.type	t, %object
+ 254              		.size	t, 1
+ 255              	t:
+ 256 0000 00       		.space	1
+ 257              		.type	temp.5770, %object
+ 258              		.size	temp.5770, 1
+ 259              	temp.5770:
+ 260 0001 00       		.space	1
+ 261              		.type	timer_count, %object
+ 262              		.size	timer_count, 2
+ 263              	timer_count:
+ 264 0002 0000     		.space	2
+ 265              		.text
+ 266              	.Letext0:
+ 267              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 268              		.file 3 "Generated_Source\\PSoC4/key_touch_Control.h"
+ 269              		.file 4 "Generated_Source\\PSoC4/key_touch_Sensing.h"
+ 270              		.file 5 "A7105_driver.h"
+ 271              		.file 6 "Generated_Source\\PSoC4/key_touch_Structure.h"
+ 272              		.file 7 "Generated_Source\\PSoC4/Timer_1.h"
+ 273              		.section	.debug_info,"",%progbits
+ 274              	.Ldebug_info0:
+ 275 0000 BB020000 		.4byte	0x2bb
+ 276 0004 0400     		.2byte	0x4
+ 277 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 278 000a 04       		.byte	0x4
+ 279 000b 01       		.uleb128 0x1
+ 280 000c BD010000 		.4byte	.LASF23
+ 281 0010 01       		.byte	0x1
+ 282 0011 7C010000 		.4byte	.LASF24
+ 283 0015 90000000 		.4byte	.LASF25
+ 284 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 285 001d 00000000 		.4byte	0
+ 286 0021 00000000 		.4byte	.Ldebug_line0
+ 287 0025 02       		.uleb128 0x2
+ 288 0026 01       		.byte	0x1
+ 289 0027 06       		.byte	0x6
+ 290 0028 4F020000 		.4byte	.LASF0
+ 291 002c 02       		.uleb128 0x2
+ 292 002d 01       		.byte	0x1
+ 293 002e 08       		.byte	0x8
+ 294 002f 58000000 		.4byte	.LASF1
+ 295 0033 02       		.uleb128 0x2
+ 296 0034 02       		.byte	0x2
+ 297 0035 05       		.byte	0x5
+ 298 0036 D7000000 		.4byte	.LASF2
+ 299 003a 02       		.uleb128 0x2
+ 300 003b 02       		.byte	0x2
+ 301 003c 07       		.byte	0x7
+ 302 003d 7D000000 		.4byte	.LASF3
+ 303 0041 02       		.uleb128 0x2
+ 304 0042 04       		.byte	0x4
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 8
+
+
+ 305 0043 05       		.byte	0x5
+ 306 0044 09000000 		.4byte	.LASF4
+ 307 0048 02       		.uleb128 0x2
+ 308 0049 04       		.byte	0x4
+ 309 004a 07       		.byte	0x7
+ 310 004b 66000000 		.4byte	.LASF5
+ 311 004f 02       		.uleb128 0x2
+ 312 0050 08       		.byte	0x8
+ 313 0051 05       		.byte	0x5
+ 314 0052 6E010000 		.4byte	.LASF6
+ 315 0056 02       		.uleb128 0x2
+ 316 0057 08       		.byte	0x8
+ 317 0058 07       		.byte	0x7
+ 318 0059 30010000 		.4byte	.LASF7
+ 319 005d 03       		.uleb128 0x3
+ 320 005e 04       		.byte	0x4
+ 321 005f 05       		.byte	0x5
+ 322 0060 696E7400 		.ascii	"int\000"
+ 323 0064 02       		.uleb128 0x2
+ 324 0065 04       		.byte	0x4
+ 325 0066 07       		.byte	0x7
+ 326 0067 23010000 		.4byte	.LASF8
+ 327 006b 04       		.uleb128 0x4
+ 328 006c B7010000 		.4byte	.LASF9
+ 329 0070 02       		.byte	0x2
+ 330 0071 B901     		.2byte	0x1b9
+ 331 0073 2C000000 		.4byte	0x2c
+ 332 0077 04       		.uleb128 0x4
+ 333 0078 F1000000 		.4byte	.LASF10
+ 334 007c 02       		.byte	0x2
+ 335 007d BA01     		.2byte	0x1ba
+ 336 007f 3A000000 		.4byte	0x3a
+ 337 0083 04       		.uleb128 0x4
+ 338 0084 F8000000 		.4byte	.LASF11
+ 339 0088 02       		.byte	0x2
+ 340 0089 BB01     		.2byte	0x1bb
+ 341 008b 48000000 		.4byte	0x48
+ 342 008f 02       		.uleb128 0x2
+ 343 0090 04       		.byte	0x4
+ 344 0091 04       		.byte	0x4
+ 345 0092 52000000 		.4byte	.LASF12
+ 346 0096 02       		.uleb128 0x2
+ 347 0097 08       		.byte	0x8
+ 348 0098 04       		.byte	0x4
+ 349 0099 D0000000 		.4byte	.LASF13
+ 350 009d 02       		.uleb128 0x2
+ 351 009e 01       		.byte	0x1
+ 352 009f 08       		.byte	0x8
+ 353 00a0 83010000 		.4byte	.LASF14
+ 354 00a4 04       		.uleb128 0x4
+ 355 00a5 00000000 		.4byte	.LASF15
+ 356 00a9 02       		.byte	0x2
+ 357 00aa 5B02     		.2byte	0x25b
+ 358 00ac 48000000 		.4byte	0x48
+ 359 00b0 05       		.uleb128 0x5
+ 360 00b1 6B000000 		.4byte	0x6b
+ 361 00b5 02       		.uleb128 0x2
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 9
+
+
+ 362 00b6 04       		.byte	0x4
+ 363 00b7 07       		.byte	0x7
+ 364 00b8 65010000 		.4byte	.LASF16
+ 365 00bc 06       		.uleb128 0x6
+ 366 00bd 47010000 		.4byte	.LASF26
+ 367 00c1 01       		.byte	0x1
+ 368 00c2 13       		.byte	0x13
+ 369 00c3 5D000000 		.4byte	0x5d
+ 370 00c7 00000000 		.4byte	.LFB35
+ 371 00cb 00010000 		.4byte	.LFE35-.LFB35
+ 372 00cf 01       		.uleb128 0x1
+ 373 00d0 9C       		.byte	0x9c
+ 374 00d1 01020000 		.4byte	0x201
+ 375 00d5 07       		.uleb128 0x7
+ 376 00d6 78000000 		.4byte	.LASF27
+ 377 00da 01       		.byte	0x1
+ 378 00db 15       		.byte	0x15
+ 379 00dc B0000000 		.4byte	0xb0
+ 380 00e0 05       		.uleb128 0x5
+ 381 00e1 03       		.byte	0x3
+ 382 00e2 01000000 		.4byte	temp.5770
+ 383 00e6 08       		.uleb128 0x8
+ 384 00e7 08000000 		.4byte	.LVL0
+ 385 00eb 67020000 		.4byte	0x267
+ 386 00ef 08       		.uleb128 0x8
+ 387 00f0 0C000000 		.4byte	.LVL1
+ 388 00f4 6E020000 		.4byte	0x26e
+ 389 00f8 08       		.uleb128 0x8
+ 390 00f9 10000000 		.4byte	.LVL2
+ 391 00fd 79020000 		.4byte	0x279
+ 392 0101 08       		.uleb128 0x8
+ 393 0102 14000000 		.4byte	.LVL3
+ 394 0106 84020000 		.4byte	0x284
+ 395 010a 08       		.uleb128 0x8
+ 396 010b 1C000000 		.4byte	.LVL4
+ 397 010f 8F020000 		.4byte	0x28f
+ 398 0113 09       		.uleb128 0x9
+ 399 0114 22000000 		.4byte	.LVL5
+ 400 0118 9A020000 		.4byte	0x29a
+ 401 011c 26010000 		.4byte	0x126
+ 402 0120 0A       		.uleb128 0xa
+ 403 0121 01       		.uleb128 0x1
+ 404 0122 50       		.byte	0x50
+ 405 0123 01       		.uleb128 0x1
+ 406 0124 30       		.byte	0x30
+ 407 0125 00       		.byte	0
+ 408 0126 09       		.uleb128 0x9
+ 409 0127 32000000 		.4byte	.LVL6
+ 410 012b 9A020000 		.4byte	0x29a
+ 411 012f 39010000 		.4byte	0x139
+ 412 0133 0A       		.uleb128 0xa
+ 413 0134 01       		.uleb128 0x1
+ 414 0135 50       		.byte	0x50
+ 415 0136 01       		.uleb128 0x1
+ 416 0137 31       		.byte	0x31
+ 417 0138 00       		.byte	0
+ 418 0139 09       		.uleb128 0x9
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 10
+
+
+ 419 013a 42000000 		.4byte	.LVL7
+ 420 013e 9A020000 		.4byte	0x29a
+ 421 0142 4C010000 		.4byte	0x14c
+ 422 0146 0A       		.uleb128 0xa
+ 423 0147 01       		.uleb128 0x1
+ 424 0148 50       		.byte	0x50
+ 425 0149 01       		.uleb128 0x1
+ 426 014a 32       		.byte	0x32
+ 427 014b 00       		.byte	0
+ 428 014c 09       		.uleb128 0x9
+ 429 014d 52000000 		.4byte	.LVL8
+ 430 0151 9A020000 		.4byte	0x29a
+ 431 0155 5F010000 		.4byte	0x15f
+ 432 0159 0A       		.uleb128 0xa
+ 433 015a 01       		.uleb128 0x1
+ 434 015b 50       		.byte	0x50
+ 435 015c 01       		.uleb128 0x1
+ 436 015d 33       		.byte	0x33
+ 437 015e 00       		.byte	0
+ 438 015f 09       		.uleb128 0x9
+ 439 0160 62000000 		.4byte	.LVL9
+ 440 0164 9A020000 		.4byte	0x29a
+ 441 0168 72010000 		.4byte	0x172
+ 442 016c 0A       		.uleb128 0xa
+ 443 016d 01       		.uleb128 0x1
+ 444 016e 50       		.byte	0x50
+ 445 016f 01       		.uleb128 0x1
+ 446 0170 34       		.byte	0x34
+ 447 0171 00       		.byte	0
+ 448 0172 09       		.uleb128 0x9
+ 449 0173 72000000 		.4byte	.LVL10
+ 450 0177 9A020000 		.4byte	0x29a
+ 451 017b 85010000 		.4byte	0x185
+ 452 017f 0A       		.uleb128 0xa
+ 453 0180 01       		.uleb128 0x1
+ 454 0181 50       		.byte	0x50
+ 455 0182 01       		.uleb128 0x1
+ 456 0183 35       		.byte	0x35
+ 457 0184 00       		.byte	0
+ 458 0185 09       		.uleb128 0x9
+ 459 0186 82000000 		.4byte	.LVL11
+ 460 018a 9A020000 		.4byte	0x29a
+ 461 018e 98010000 		.4byte	0x198
+ 462 0192 0A       		.uleb128 0xa
+ 463 0193 01       		.uleb128 0x1
+ 464 0194 50       		.byte	0x50
+ 465 0195 01       		.uleb128 0x1
+ 466 0196 36       		.byte	0x36
+ 467 0197 00       		.byte	0
+ 468 0198 09       		.uleb128 0x9
+ 469 0199 92000000 		.4byte	.LVL12
+ 470 019d 9A020000 		.4byte	0x29a
+ 471 01a1 AB010000 		.4byte	0x1ab
+ 472 01a5 0A       		.uleb128 0xa
+ 473 01a6 01       		.uleb128 0x1
+ 474 01a7 50       		.byte	0x50
+ 475 01a8 01       		.uleb128 0x1
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 11
+
+
+ 476 01a9 37       		.byte	0x37
+ 477 01aa 00       		.byte	0
+ 478 01ab 09       		.uleb128 0x9
+ 479 01ac A2000000 		.4byte	.LVL13
+ 480 01b0 9A020000 		.4byte	0x29a
+ 481 01b4 BE010000 		.4byte	0x1be
+ 482 01b8 0A       		.uleb128 0xa
+ 483 01b9 01       		.uleb128 0x1
+ 484 01ba 50       		.byte	0x50
+ 485 01bb 01       		.uleb128 0x1
+ 486 01bc 38       		.byte	0x38
+ 487 01bd 00       		.byte	0
+ 488 01be 09       		.uleb128 0x9
+ 489 01bf B2000000 		.4byte	.LVL14
+ 490 01c3 9A020000 		.4byte	0x29a
+ 491 01c7 D1010000 		.4byte	0x1d1
+ 492 01cb 0A       		.uleb128 0xa
+ 493 01cc 01       		.uleb128 0x1
+ 494 01cd 50       		.byte	0x50
+ 495 01ce 01       		.uleb128 0x1
+ 496 01cf 39       		.byte	0x39
+ 497 01d0 00       		.byte	0
+ 498 01d1 09       		.uleb128 0x9
+ 499 01d2 C2000000 		.4byte	.LVL15
+ 500 01d6 9A020000 		.4byte	0x29a
+ 501 01da E4010000 		.4byte	0x1e4
+ 502 01de 0A       		.uleb128 0xa
+ 503 01df 01       		.uleb128 0x1
+ 504 01e0 50       		.byte	0x50
+ 505 01e1 01       		.uleb128 0x1
+ 506 01e2 3A       		.byte	0x3a
+ 507 01e3 00       		.byte	0
+ 508 01e4 09       		.uleb128 0x9
+ 509 01e5 D2000000 		.4byte	.LVL16
+ 510 01e9 9A020000 		.4byte	0x29a
+ 511 01ed F7010000 		.4byte	0x1f7
+ 512 01f1 0A       		.uleb128 0xa
+ 513 01f2 01       		.uleb128 0x1
+ 514 01f3 50       		.byte	0x50
+ 515 01f4 01       		.uleb128 0x1
+ 516 01f5 3B       		.byte	0x3b
+ 517 01f6 00       		.byte	0
+ 518 01f7 08       		.uleb128 0x8
+ 519 01f8 F8000000 		.4byte	.LVL17
+ 520 01fc 79020000 		.4byte	0x279
+ 521 0200 00       		.byte	0
+ 522 0201 0B       		.uleb128 0xb
+ 523 0202 A4010000 		.4byte	.LASF28
+ 524 0206 01       		.byte	0x1
+ 525 0207 5A       		.byte	0x5a
+ 526 0208 00000000 		.4byte	.LFB36
+ 527 020c 18000000 		.4byte	.LFE36-.LFB36
+ 528 0210 01       		.uleb128 0x1
+ 529 0211 9C       		.byte	0x9c
+ 530 0212 26020000 		.4byte	0x226
+ 531 0216 0C       		.uleb128 0xc
+ 532 0217 08000000 		.4byte	.LVL18
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 12
+
+
+ 533 021b B0020000 		.4byte	0x2b0
+ 534 021f 0A       		.uleb128 0xa
+ 535 0220 01       		.uleb128 0x1
+ 536 0221 50       		.byte	0x50
+ 537 0222 01       		.uleb128 0x1
+ 538 0223 31       		.byte	0x31
+ 539 0224 00       		.byte	0
+ 540 0225 00       		.byte	0
+ 541 0226 0D       		.uleb128 0xd
+ 542 0227 7400     		.ascii	"t\000"
+ 543 0229 01       		.byte	0x1
+ 544 022a 0F       		.byte	0xf
+ 545 022b 6B000000 		.4byte	0x6b
+ 546 022f 05       		.uleb128 0x5
+ 547 0230 03       		.byte	0x3
+ 548 0231 00000000 		.4byte	t
+ 549 0235 0E       		.uleb128 0xe
+ 550 0236 6B000000 		.4byte	0x6b
+ 551 023a 45020000 		.4byte	0x245
+ 552 023e 0F       		.uleb128 0xf
+ 553 023f B5000000 		.4byte	0xb5
+ 554 0243 0F       		.byte	0xf
+ 555 0244 00       		.byte	0
+ 556 0245 10       		.uleb128 0x10
+ 557 0246 23000000 		.4byte	.LASF17
+ 558 024a 01       		.byte	0x1
+ 559 024b 10       		.byte	0x10
+ 560 024c 35020000 		.4byte	0x235
+ 561 0250 05       		.uleb128 0x5
+ 562 0251 03       		.byte	0x3
+ 563 0252 00000000 		.4byte	send_buffer
+ 564 0256 10       		.uleb128 0x10
+ 565 0257 46000000 		.4byte	.LASF18
+ 566 025b 01       		.byte	0x1
+ 567 025c 11       		.byte	0x11
+ 568 025d 77000000 		.4byte	0x77
+ 569 0261 05       		.uleb128 0x5
+ 570 0262 03       		.byte	0x3
+ 571 0263 00000000 		.4byte	timer_count
+ 572 0267 11       		.uleb128 0x11
+ 573 0268 18010000 		.4byte	.LASF29
+ 574 026c 05       		.byte	0x5
+ 575 026d 05       		.byte	0x5
+ 576 026e 12       		.uleb128 0x12
+ 577 026f E1000000 		.4byte	.LASF19
+ 578 0273 03       		.byte	0x3
+ 579 0274 39       		.byte	0x39
+ 580 0275 A4000000 		.4byte	0xa4
+ 581 0279 12       		.uleb128 0x12
+ 582 027a 4C010000 		.4byte	.LASF20
+ 583 027e 04       		.byte	0x4
+ 584 027f 5C       		.byte	0x5c
+ 585 0280 A4000000 		.4byte	0xa4
+ 586 0284 12       		.uleb128 0x12
+ 587 0285 12000000 		.4byte	.LASF21
+ 588 0289 04       		.byte	0x4
+ 589 028a 5D       		.byte	0x5d
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 13
+
+
+ 590 028b 83000000 		.4byte	0x83
+ 591 028f 12       		.uleb128 0x12
+ 592 0290 88010000 		.4byte	.LASF22
+ 593 0294 03       		.byte	0x3
+ 594 0295 3D       		.byte	0x3d
+ 595 0296 A4000000 		.4byte	0xa4
+ 596 029a 13       		.uleb128 0x13
+ 597 029b FF000000 		.4byte	.LASF30
+ 598 029f 06       		.byte	0x6
+ 599 02a0 1904     		.2byte	0x419
+ 600 02a2 83000000 		.4byte	0x83
+ 601 02a6 B0020000 		.4byte	0x2b0
+ 602 02aa 14       		.uleb128 0x14
+ 603 02ab 83000000 		.4byte	0x83
+ 604 02af 00       		.byte	0
+ 605 02b0 15       		.uleb128 0x15
+ 606 02b1 2F000000 		.4byte	.LASF31
+ 607 02b5 07       		.byte	0x7
+ 608 02b6 4701     		.2byte	0x147
+ 609 02b8 14       		.uleb128 0x14
+ 610 02b9 83000000 		.4byte	0x83
+ 611 02bd 00       		.byte	0
+ 612 02be 00       		.byte	0
+ 613              		.section	.debug_abbrev,"",%progbits
+ 614              	.Ldebug_abbrev0:
+ 615 0000 01       		.uleb128 0x1
+ 616 0001 11       		.uleb128 0x11
+ 617 0002 01       		.byte	0x1
+ 618 0003 25       		.uleb128 0x25
+ 619 0004 0E       		.uleb128 0xe
+ 620 0005 13       		.uleb128 0x13
+ 621 0006 0B       		.uleb128 0xb
+ 622 0007 03       		.uleb128 0x3
+ 623 0008 0E       		.uleb128 0xe
+ 624 0009 1B       		.uleb128 0x1b
+ 625 000a 0E       		.uleb128 0xe
+ 626 000b 55       		.uleb128 0x55
+ 627 000c 17       		.uleb128 0x17
+ 628 000d 11       		.uleb128 0x11
+ 629 000e 01       		.uleb128 0x1
+ 630 000f 10       		.uleb128 0x10
+ 631 0010 17       		.uleb128 0x17
+ 632 0011 00       		.byte	0
+ 633 0012 00       		.byte	0
+ 634 0013 02       		.uleb128 0x2
+ 635 0014 24       		.uleb128 0x24
+ 636 0015 00       		.byte	0
+ 637 0016 0B       		.uleb128 0xb
+ 638 0017 0B       		.uleb128 0xb
+ 639 0018 3E       		.uleb128 0x3e
+ 640 0019 0B       		.uleb128 0xb
+ 641 001a 03       		.uleb128 0x3
+ 642 001b 0E       		.uleb128 0xe
+ 643 001c 00       		.byte	0
+ 644 001d 00       		.byte	0
+ 645 001e 03       		.uleb128 0x3
+ 646 001f 24       		.uleb128 0x24
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 14
+
+
+ 647 0020 00       		.byte	0
+ 648 0021 0B       		.uleb128 0xb
+ 649 0022 0B       		.uleb128 0xb
+ 650 0023 3E       		.uleb128 0x3e
+ 651 0024 0B       		.uleb128 0xb
+ 652 0025 03       		.uleb128 0x3
+ 653 0026 08       		.uleb128 0x8
+ 654 0027 00       		.byte	0
+ 655 0028 00       		.byte	0
+ 656 0029 04       		.uleb128 0x4
+ 657 002a 16       		.uleb128 0x16
+ 658 002b 00       		.byte	0
+ 659 002c 03       		.uleb128 0x3
+ 660 002d 0E       		.uleb128 0xe
+ 661 002e 3A       		.uleb128 0x3a
+ 662 002f 0B       		.uleb128 0xb
+ 663 0030 3B       		.uleb128 0x3b
+ 664 0031 05       		.uleb128 0x5
+ 665 0032 49       		.uleb128 0x49
+ 666 0033 13       		.uleb128 0x13
+ 667 0034 00       		.byte	0
+ 668 0035 00       		.byte	0
+ 669 0036 05       		.uleb128 0x5
+ 670 0037 35       		.uleb128 0x35
+ 671 0038 00       		.byte	0
+ 672 0039 49       		.uleb128 0x49
+ 673 003a 13       		.uleb128 0x13
+ 674 003b 00       		.byte	0
+ 675 003c 00       		.byte	0
+ 676 003d 06       		.uleb128 0x6
+ 677 003e 2E       		.uleb128 0x2e
+ 678 003f 01       		.byte	0x1
+ 679 0040 3F       		.uleb128 0x3f
+ 680 0041 19       		.uleb128 0x19
+ 681 0042 03       		.uleb128 0x3
+ 682 0043 0E       		.uleb128 0xe
+ 683 0044 3A       		.uleb128 0x3a
+ 684 0045 0B       		.uleb128 0xb
+ 685 0046 3B       		.uleb128 0x3b
+ 686 0047 0B       		.uleb128 0xb
+ 687 0048 27       		.uleb128 0x27
+ 688 0049 19       		.uleb128 0x19
+ 689 004a 49       		.uleb128 0x49
+ 690 004b 13       		.uleb128 0x13
+ 691 004c 11       		.uleb128 0x11
+ 692 004d 01       		.uleb128 0x1
+ 693 004e 12       		.uleb128 0x12
+ 694 004f 06       		.uleb128 0x6
+ 695 0050 40       		.uleb128 0x40
+ 696 0051 18       		.uleb128 0x18
+ 697 0052 9742     		.uleb128 0x2117
+ 698 0054 19       		.uleb128 0x19
+ 699 0055 01       		.uleb128 0x1
+ 700 0056 13       		.uleb128 0x13
+ 701 0057 00       		.byte	0
+ 702 0058 00       		.byte	0
+ 703 0059 07       		.uleb128 0x7
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 15
+
+
+ 704 005a 34       		.uleb128 0x34
+ 705 005b 00       		.byte	0
+ 706 005c 03       		.uleb128 0x3
+ 707 005d 0E       		.uleb128 0xe
+ 708 005e 3A       		.uleb128 0x3a
+ 709 005f 0B       		.uleb128 0xb
+ 710 0060 3B       		.uleb128 0x3b
+ 711 0061 0B       		.uleb128 0xb
+ 712 0062 49       		.uleb128 0x49
+ 713 0063 13       		.uleb128 0x13
+ 714 0064 02       		.uleb128 0x2
+ 715 0065 18       		.uleb128 0x18
+ 716 0066 00       		.byte	0
+ 717 0067 00       		.byte	0
+ 718 0068 08       		.uleb128 0x8
+ 719 0069 898201   		.uleb128 0x4109
+ 720 006c 00       		.byte	0
+ 721 006d 11       		.uleb128 0x11
+ 722 006e 01       		.uleb128 0x1
+ 723 006f 31       		.uleb128 0x31
+ 724 0070 13       		.uleb128 0x13
+ 725 0071 00       		.byte	0
+ 726 0072 00       		.byte	0
+ 727 0073 09       		.uleb128 0x9
+ 728 0074 898201   		.uleb128 0x4109
+ 729 0077 01       		.byte	0x1
+ 730 0078 11       		.uleb128 0x11
+ 731 0079 01       		.uleb128 0x1
+ 732 007a 31       		.uleb128 0x31
+ 733 007b 13       		.uleb128 0x13
+ 734 007c 01       		.uleb128 0x1
+ 735 007d 13       		.uleb128 0x13
+ 736 007e 00       		.byte	0
+ 737 007f 00       		.byte	0
+ 738 0080 0A       		.uleb128 0xa
+ 739 0081 8A8201   		.uleb128 0x410a
+ 740 0084 00       		.byte	0
+ 741 0085 02       		.uleb128 0x2
+ 742 0086 18       		.uleb128 0x18
+ 743 0087 9142     		.uleb128 0x2111
+ 744 0089 18       		.uleb128 0x18
+ 745 008a 00       		.byte	0
+ 746 008b 00       		.byte	0
+ 747 008c 0B       		.uleb128 0xb
+ 748 008d 2E       		.uleb128 0x2e
+ 749 008e 01       		.byte	0x1
+ 750 008f 3F       		.uleb128 0x3f
+ 751 0090 19       		.uleb128 0x19
+ 752 0091 03       		.uleb128 0x3
+ 753 0092 0E       		.uleb128 0xe
+ 754 0093 3A       		.uleb128 0x3a
+ 755 0094 0B       		.uleb128 0xb
+ 756 0095 3B       		.uleb128 0x3b
+ 757 0096 0B       		.uleb128 0xb
+ 758 0097 27       		.uleb128 0x27
+ 759 0098 19       		.uleb128 0x19
+ 760 0099 11       		.uleb128 0x11
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 16
+
+
+ 761 009a 01       		.uleb128 0x1
+ 762 009b 12       		.uleb128 0x12
+ 763 009c 06       		.uleb128 0x6
+ 764 009d 40       		.uleb128 0x40
+ 765 009e 18       		.uleb128 0x18
+ 766 009f 9742     		.uleb128 0x2117
+ 767 00a1 19       		.uleb128 0x19
+ 768 00a2 01       		.uleb128 0x1
+ 769 00a3 13       		.uleb128 0x13
+ 770 00a4 00       		.byte	0
+ 771 00a5 00       		.byte	0
+ 772 00a6 0C       		.uleb128 0xc
+ 773 00a7 898201   		.uleb128 0x4109
+ 774 00aa 01       		.byte	0x1
+ 775 00ab 11       		.uleb128 0x11
+ 776 00ac 01       		.uleb128 0x1
+ 777 00ad 31       		.uleb128 0x31
+ 778 00ae 13       		.uleb128 0x13
+ 779 00af 00       		.byte	0
+ 780 00b0 00       		.byte	0
+ 781 00b1 0D       		.uleb128 0xd
+ 782 00b2 34       		.uleb128 0x34
+ 783 00b3 00       		.byte	0
+ 784 00b4 03       		.uleb128 0x3
+ 785 00b5 08       		.uleb128 0x8
+ 786 00b6 3A       		.uleb128 0x3a
+ 787 00b7 0B       		.uleb128 0xb
+ 788 00b8 3B       		.uleb128 0x3b
+ 789 00b9 0B       		.uleb128 0xb
+ 790 00ba 49       		.uleb128 0x49
+ 791 00bb 13       		.uleb128 0x13
+ 792 00bc 3F       		.uleb128 0x3f
+ 793 00bd 19       		.uleb128 0x19
+ 794 00be 02       		.uleb128 0x2
+ 795 00bf 18       		.uleb128 0x18
+ 796 00c0 00       		.byte	0
+ 797 00c1 00       		.byte	0
+ 798 00c2 0E       		.uleb128 0xe
+ 799 00c3 01       		.uleb128 0x1
+ 800 00c4 01       		.byte	0x1
+ 801 00c5 49       		.uleb128 0x49
+ 802 00c6 13       		.uleb128 0x13
+ 803 00c7 01       		.uleb128 0x1
+ 804 00c8 13       		.uleb128 0x13
+ 805 00c9 00       		.byte	0
+ 806 00ca 00       		.byte	0
+ 807 00cb 0F       		.uleb128 0xf
+ 808 00cc 21       		.uleb128 0x21
+ 809 00cd 00       		.byte	0
+ 810 00ce 49       		.uleb128 0x49
+ 811 00cf 13       		.uleb128 0x13
+ 812 00d0 2F       		.uleb128 0x2f
+ 813 00d1 0B       		.uleb128 0xb
+ 814 00d2 00       		.byte	0
+ 815 00d3 00       		.byte	0
+ 816 00d4 10       		.uleb128 0x10
+ 817 00d5 34       		.uleb128 0x34
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 17
+
+
+ 818 00d6 00       		.byte	0
+ 819 00d7 03       		.uleb128 0x3
+ 820 00d8 0E       		.uleb128 0xe
+ 821 00d9 3A       		.uleb128 0x3a
+ 822 00da 0B       		.uleb128 0xb
+ 823 00db 3B       		.uleb128 0x3b
+ 824 00dc 0B       		.uleb128 0xb
+ 825 00dd 49       		.uleb128 0x49
+ 826 00de 13       		.uleb128 0x13
+ 827 00df 3F       		.uleb128 0x3f
+ 828 00e0 19       		.uleb128 0x19
+ 829 00e1 02       		.uleb128 0x2
+ 830 00e2 18       		.uleb128 0x18
+ 831 00e3 00       		.byte	0
+ 832 00e4 00       		.byte	0
+ 833 00e5 11       		.uleb128 0x11
+ 834 00e6 2E       		.uleb128 0x2e
+ 835 00e7 00       		.byte	0
+ 836 00e8 3F       		.uleb128 0x3f
+ 837 00e9 19       		.uleb128 0x19
+ 838 00ea 03       		.uleb128 0x3
+ 839 00eb 0E       		.uleb128 0xe
+ 840 00ec 3A       		.uleb128 0x3a
+ 841 00ed 0B       		.uleb128 0xb
+ 842 00ee 3B       		.uleb128 0x3b
+ 843 00ef 0B       		.uleb128 0xb
+ 844 00f0 27       		.uleb128 0x27
+ 845 00f1 19       		.uleb128 0x19
+ 846 00f2 3C       		.uleb128 0x3c
+ 847 00f3 19       		.uleb128 0x19
+ 848 00f4 00       		.byte	0
+ 849 00f5 00       		.byte	0
+ 850 00f6 12       		.uleb128 0x12
+ 851 00f7 2E       		.uleb128 0x2e
+ 852 00f8 00       		.byte	0
+ 853 00f9 3F       		.uleb128 0x3f
+ 854 00fa 19       		.uleb128 0x19
+ 855 00fb 03       		.uleb128 0x3
+ 856 00fc 0E       		.uleb128 0xe
+ 857 00fd 3A       		.uleb128 0x3a
+ 858 00fe 0B       		.uleb128 0xb
+ 859 00ff 3B       		.uleb128 0x3b
+ 860 0100 0B       		.uleb128 0xb
+ 861 0101 27       		.uleb128 0x27
+ 862 0102 19       		.uleb128 0x19
+ 863 0103 49       		.uleb128 0x49
+ 864 0104 13       		.uleb128 0x13
+ 865 0105 3C       		.uleb128 0x3c
+ 866 0106 19       		.uleb128 0x19
+ 867 0107 00       		.byte	0
+ 868 0108 00       		.byte	0
+ 869 0109 13       		.uleb128 0x13
+ 870 010a 2E       		.uleb128 0x2e
+ 871 010b 01       		.byte	0x1
+ 872 010c 3F       		.uleb128 0x3f
+ 873 010d 19       		.uleb128 0x19
+ 874 010e 03       		.uleb128 0x3
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 18
+
+
+ 875 010f 0E       		.uleb128 0xe
+ 876 0110 3A       		.uleb128 0x3a
+ 877 0111 0B       		.uleb128 0xb
+ 878 0112 3B       		.uleb128 0x3b
+ 879 0113 05       		.uleb128 0x5
+ 880 0114 27       		.uleb128 0x27
+ 881 0115 19       		.uleb128 0x19
+ 882 0116 49       		.uleb128 0x49
+ 883 0117 13       		.uleb128 0x13
+ 884 0118 3C       		.uleb128 0x3c
+ 885 0119 19       		.uleb128 0x19
+ 886 011a 01       		.uleb128 0x1
+ 887 011b 13       		.uleb128 0x13
+ 888 011c 00       		.byte	0
+ 889 011d 00       		.byte	0
+ 890 011e 14       		.uleb128 0x14
+ 891 011f 05       		.uleb128 0x5
+ 892 0120 00       		.byte	0
+ 893 0121 49       		.uleb128 0x49
+ 894 0122 13       		.uleb128 0x13
+ 895 0123 00       		.byte	0
+ 896 0124 00       		.byte	0
+ 897 0125 15       		.uleb128 0x15
+ 898 0126 2E       		.uleb128 0x2e
+ 899 0127 01       		.byte	0x1
+ 900 0128 3F       		.uleb128 0x3f
+ 901 0129 19       		.uleb128 0x19
+ 902 012a 03       		.uleb128 0x3
+ 903 012b 0E       		.uleb128 0xe
+ 904 012c 3A       		.uleb128 0x3a
+ 905 012d 0B       		.uleb128 0xb
+ 906 012e 3B       		.uleb128 0x3b
+ 907 012f 05       		.uleb128 0x5
+ 908 0130 27       		.uleb128 0x27
+ 909 0131 19       		.uleb128 0x19
+ 910 0132 3C       		.uleb128 0x3c
+ 911 0133 19       		.uleb128 0x19
+ 912 0134 00       		.byte	0
+ 913 0135 00       		.byte	0
+ 914 0136 00       		.byte	0
+ 915              		.section	.debug_aranges,"",%progbits
+ 916 0000 24000000 		.4byte	0x24
+ 917 0004 0200     		.2byte	0x2
+ 918 0006 00000000 		.4byte	.Ldebug_info0
+ 919 000a 04       		.byte	0x4
+ 920 000b 00       		.byte	0
+ 921 000c 0000     		.2byte	0
+ 922 000e 0000     		.2byte	0
+ 923 0010 00000000 		.4byte	.LFB35
+ 924 0014 00010000 		.4byte	.LFE35-.LFB35
+ 925 0018 00000000 		.4byte	.LFB36
+ 926 001c 18000000 		.4byte	.LFE36-.LFB36
+ 927 0020 00000000 		.4byte	0
+ 928 0024 00000000 		.4byte	0
+ 929              		.section	.debug_ranges,"",%progbits
+ 930              	.Ldebug_ranges0:
+ 931 0000 00000000 		.4byte	.LFB35
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 19
+
+
+ 932 0004 00010000 		.4byte	.LFE35
+ 933 0008 00000000 		.4byte	.LFB36
+ 934 000c 18000000 		.4byte	.LFE36
+ 935 0010 00000000 		.4byte	0
+ 936 0014 00000000 		.4byte	0
+ 937              		.section	.debug_line,"",%progbits
+ 938              	.Ldebug_line0:
+ 939 0000 F3000000 		.section	.debug_str,"MS",%progbits,1
+ 939      0200A700 
+ 939      00000201 
+ 939      FB0E0D00 
+ 939      01010101 
+ 940              	.LASF15:
+ 941 0000 63797374 		.ascii	"cystatus\000"
+ 941      61747573 
+ 941      00
+ 942              	.LASF4:
+ 943 0009 6C6F6E67 		.ascii	"long int\000"
+ 943      20696E74 
+ 943      00
+ 944              	.LASF21:
+ 945 0012 6B65795F 		.ascii	"key_touch_IsBusy\000"
+ 945      746F7563 
+ 945      685F4973 
+ 945      42757379 
+ 945      00
+ 946              	.LASF17:
+ 947 0023 73656E64 		.ascii	"send_buffer\000"
+ 947      5F627566 
+ 947      66657200 
+ 948              	.LASF31:
+ 949 002f 54696D65 		.ascii	"Timer_1_ClearInterrupt\000"
+ 949      725F315F 
+ 949      436C6561 
+ 949      72496E74 
+ 949      65727275 
+ 950              	.LASF18:
+ 951 0046 74696D65 		.ascii	"timer_count\000"
+ 951      725F636F 
+ 951      756E7400 
+ 952              	.LASF12:
+ 953 0052 666C6F61 		.ascii	"float\000"
+ 953      7400
+ 954              	.LASF1:
+ 955 0058 756E7369 		.ascii	"unsigned char\000"
+ 955      676E6564 
+ 955      20636861 
+ 955      7200
+ 956              	.LASF5:
+ 957 0066 6C6F6E67 		.ascii	"long unsigned int\000"
+ 957      20756E73 
+ 957      69676E65 
+ 957      6420696E 
+ 957      7400
+ 958              	.LASF27:
+ 959 0078 74656D70 		.ascii	"temp\000"
+ 959      00
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 20
+
+
+ 960              	.LASF3:
+ 961 007d 73686F72 		.ascii	"short unsigned int\000"
+ 961      7420756E 
+ 961      7369676E 
+ 961      65642069 
+ 961      6E7400
+ 962              	.LASF25:
+ 963 0090 433A5C55 		.ascii	"C:\\Users\\Administrator\\Desktop\\AYBR3000\\AYBR30"
+ 963      73657273 
+ 963      5C41646D 
+ 963      696E6973 
+ 963      74726174 
+ 964 00be 30305C41 		.ascii	"00\\AYBR3000.cydsn\000"
+ 964      59425233 
+ 964      3030302E 
+ 964      63796473 
+ 964      6E00
+ 965              	.LASF13:
+ 966 00d0 646F7562 		.ascii	"double\000"
+ 966      6C6500
+ 967              	.LASF2:
+ 968 00d7 73686F72 		.ascii	"short int\000"
+ 968      7420696E 
+ 968      7400
+ 969              	.LASF19:
+ 970 00e1 6B65795F 		.ascii	"key_touch_Start\000"
+ 970      746F7563 
+ 970      685F5374 
+ 970      61727400 
+ 971              	.LASF10:
+ 972 00f1 75696E74 		.ascii	"uint16\000"
+ 972      313600
+ 973              	.LASF11:
+ 974 00f8 75696E74 		.ascii	"uint32\000"
+ 974      333200
+ 975              	.LASF30:
+ 976 00ff 6B65795F 		.ascii	"key_touch_IsWidgetActive\000"
+ 976      746F7563 
+ 976      685F4973 
+ 976      57696467 
+ 976      65744163 
+ 977              	.LASF29:
+ 978 0118 41373130 		.ascii	"A7105_init\000"
+ 978      355F696E 
+ 978      697400
+ 979              	.LASF8:
+ 980 0123 756E7369 		.ascii	"unsigned int\000"
+ 980      676E6564 
+ 980      20696E74 
+ 980      00
+ 981              	.LASF7:
+ 982 0130 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 982      206C6F6E 
+ 982      6720756E 
+ 982      7369676E 
+ 982      65642069 
+ 983              	.LASF26:
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 21
+
+
+ 984 0147 6D61696E 		.ascii	"main\000"
+ 984      00
+ 985              	.LASF20:
+ 986 014c 6B65795F 		.ascii	"key_touch_ScanAllWidgets\000"
+ 986      746F7563 
+ 986      685F5363 
+ 986      616E416C 
+ 986      6C576964 
+ 987              	.LASF16:
+ 988 0165 73697A65 		.ascii	"sizetype\000"
+ 988      74797065 
+ 988      00
+ 989              	.LASF6:
+ 990 016e 6C6F6E67 		.ascii	"long long int\000"
+ 990      206C6F6E 
+ 990      6720696E 
+ 990      7400
+ 991              	.LASF24:
+ 992 017c 6D61696E 		.ascii	"main.c\000"
+ 992      2E6300
+ 993              	.LASF14:
+ 994 0183 63686172 		.ascii	"char\000"
+ 994      00
+ 995              	.LASF22:
+ 996 0188 6B65795F 		.ascii	"key_touch_ProcessAllWidgets\000"
+ 996      746F7563 
+ 996      685F5072 
+ 996      6F636573 
+ 996      73416C6C 
+ 997              	.LASF28:
+ 998 01a4 74696D65 		.ascii	"time_1ms_Interrupt\000"
+ 998      5F316D73 
+ 998      5F496E74 
+ 998      65727275 
+ 998      707400
+ 999              	.LASF9:
+ 1000 01b7 75696E74 		.ascii	"uint8\000"
+ 1000      3800
+ 1001              	.LASF23:
+ 1002 01bd 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 1002      4320342E 
+ 1002      392E3320 
+ 1002      32303135 
+ 1002      30333033 
+ 1003 01f0 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0plus -mthumb -"
+ 1003      20726576 
+ 1003      6973696F 
+ 1003      6E203232 
+ 1003      31323230 
+ 1004 0223 67202D4F 		.ascii	"g -Og -ffunction-sections -ffat-lto-objects\000"
+ 1004      67202D66 
+ 1004      66756E63 
+ 1004      74696F6E 
+ 1004      2D736563 
+ 1005              	.LASF0:
+ 1006 024f 7369676E 		.ascii	"signed char\000"
+ 1006      65642063 
+ARM GAS  C:\Users\Administrator\AppData\Local\Temp\ccOnlNxv.s 			page 22
+
+
+ 1006      68617200 
+ 1007              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br
